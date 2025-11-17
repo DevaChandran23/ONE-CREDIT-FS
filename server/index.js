@@ -22,9 +22,7 @@ const progressRoutes = require('./routes/progress');
 app.use(helmet());
 app.use(compression());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
-    : ['http://localhost:3000'],
+  origin: true,
   credentials: true
 }));
 

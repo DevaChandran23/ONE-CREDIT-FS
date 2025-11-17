@@ -2,6 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// Set base URL for axios
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -31,7 +34,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await axios.get('/api/auth/me');
+          const response = await axios.get('/auth/me');
           setUser(response.data.data.user);
         } catch (error) {
           console.error('Auth check failed:', error);
@@ -49,7 +52,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setLoading(true);
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await axios.post('/auth/login', { email, password });
       
       const { user: userData, token: authToken } = response.data.data;
       
@@ -72,7 +75,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setLoading(true);
-      const response = await axios.post('/api/auth/register', userData);
+      const response = await axios.post('/auth/register', userData);
       
       const { user: newUser, token: authToken } = response.data.data;
       
@@ -95,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       if (token) {
-        await axios.post('/api/auth/logout');
+        await axios.post('/auth/logout');
       }
     } catch (error) {
       console.error('Logout error:', error);
@@ -112,7 +115,7 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (profileData) => {
     try {
       setLoading(true);
-      const response = await axios.put('/api/auth/me', profileData);
+      const response = await axios.put('/auth/me', profileData);
       
       const updatedUser = response.data.data.user;
       setUser(updatedUser);
@@ -132,7 +135,7 @@ export const AuthProvider = ({ children }) => {
   const changePassword = async (currentPassword, newPassword) => {
     try {
       setLoading(true);
-      await axios.put('/api/auth/change-password', { currentPassword, newPassword });
+      await axios.put('/auth/change-password', { currentPassword, newPassword });
       
       toast.success('Password changed successfully!');
       return { success: true };
@@ -149,7 +152,7 @@ export const AuthProvider = ({ children }) => {
   const forgotPassword = async (email) => {
     try {
       setLoading(true);
-      await axios.post('/api/auth/forgot-password', { email });
+      await axios.post('/auth/forgot-password', { email });
       
       toast.success('Password reset instructions sent to your email!');
       return { success: true };
@@ -166,7 +169,7 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (resetToken, newPassword) => {
     try {
       setLoading(true);
-      await axios.post('/api/auth/reset-password', { resetToken, newPassword });
+      await axios.post('/auth/reset-password', { resetToken, newPassword });
       
       toast.success('Password reset successfully! You can now log in with your new password.');
       return { success: true };
@@ -184,7 +187,7 @@ export const AuthProvider = ({ children }) => {
     if (!token) return;
     
     try {
-      const response = await axios.get('/api/auth/me');
+      const response = await axios.get('/auth/me');
       setUser(response.data.data.user);
     } catch (error) {
       console.error('Failed to refresh user data:', error);

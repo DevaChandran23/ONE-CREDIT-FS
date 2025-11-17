@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 import {
   Play,
   Pause,
@@ -103,22 +104,14 @@ const WorkoutSessionModal = ({
 
   const startWorkout = async () => {
     try {
-      const response = await fetch('/api/workout-sessions/start', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          workoutId: workout.id.toString(),
-          workoutTitle: workout.title,
-          exercises: workout.exercises
-        })
+      const response = await axios.post('/workout-sessions/start', {
+        workoutId: workout.id.toString(),
+        workoutTitle: workout.title,
+        exercises: workout.exercises
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setSessionData(data.data.session);
+      if (response.data) {
+        setSessionData(response.data.session);
         setSessionState('active');
         playSound('workout-start');
       }
@@ -147,19 +140,12 @@ const WorkoutSessionModal = ({
     };
 
     try {
-      const response = await fetch(
-        `/api/workout-sessions/${sessionData._id}/exercise/${currentExerciseIndex}/set/${currentSetIndex}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify(setData)
-        }
+      const response = await axios.put(
+        `/workout-sessions/${sessionData._id}/exercise/${currentExerciseIndex}/set/${currentSetIndex}`,
+        setData
       );
 
-      if (response.ok) {
+      if (response.data) {
         // Update local state
         const newProgress = [...exerciseProgress];
         newProgress[currentExerciseIndex].sets[currentSetIndex] = {
@@ -201,15 +187,8 @@ const WorkoutSessionModal = ({
     if (!sessionData) return;
 
     try {
-      await fetch(
-        `/api/workout-sessions/${sessionData._id}/exercise/${currentExerciseIndex}/complete`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
+      await axios.put(
+        `/workout-sessions/${sessionData._id}/exercise/${currentExerciseIndex}/complete`
       );
 
       // Update local state
@@ -235,17 +214,10 @@ const WorkoutSessionModal = ({
     if (!sessionData) return;
 
     try {
-      await fetch(`/api/workout-sessions/${sessionData._id}/complete`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          caloriesBurned: workout.calories,
-          rating: 5,
-          difficulty: 'just-right'
-        })
+      await axios.put(`/workout-sessions/${sessionData._id}/complete`, {
+        caloriesBurned: workout.calories,
+        rating: 5,
+        difficulty: 'just-right'
       });
 
       setSessionState('completed');
