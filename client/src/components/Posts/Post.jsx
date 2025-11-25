@@ -7,7 +7,7 @@ import { userService } from '../../services/userService';
 import { toast } from 'react-hot-toast';
 
 const Post = ({ post, onLike, onDelete, onFollow }) => {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, token } = useAuth();
   const [isLiked, setIsLiked] = useState(
     Array.isArray(post.likes) && post.likes.some((l) => (l?._id ?? l) === currentUser?._id)
   );
@@ -16,7 +16,7 @@ const Post = ({ post, onLike, onDelete, onFollow }) => {
 
   const handleLike = async () => {
     try {
-      await postService.likePost(post._id, currentUser.token);
+      await postService.likePost(post._id, token);
       setIsLiked(!isLiked);
       onLike && onLike(post._id, !isLiked);
     } catch (error) {
@@ -27,9 +27,9 @@ const Post = ({ post, onLike, onDelete, onFollow }) => {
   const handleFollow = async () => {
     try {
       if (isFollowing) {
-        await userService.unfollowUser(post.user._id, currentUser.token);
+        await userService.unfollowUser(post.user._id, token);
       } else {
-        await userService.followUser(post.user._id, currentUser.token);
+        await userService.followUser(post.user._id, token);
       }
       setIsFollowing(!isFollowing);
       onFollow && onFollow(post.user._id, !isFollowing);
