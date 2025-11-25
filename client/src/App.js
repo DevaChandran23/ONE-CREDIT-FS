@@ -20,7 +20,7 @@ import ChallengeDetailPage from './pages/Challenges/ChallengeDetailPage';
 import WorkoutsPage from './pages/Workouts/WorkoutsPage';
 import WorkoutDetailPage from './pages/Workouts/WorkoutDetailPage';
 import ProfilePage from './pages/Profile/ProfilePage';
-import CommunityPage from './pages/Community/CommunityPage';
+import CommunityPage from './pages/Community/CommunityPage.jsx';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Context
