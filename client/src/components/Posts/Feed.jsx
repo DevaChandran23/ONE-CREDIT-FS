@@ -8,14 +8,14 @@ import Post from './Post';
 import { motion } from 'framer-motion';
 
 const Feed = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const queryClient = useQueryClient();
   
   const { data: posts = [], isLoading, error, refetch } = useQuery(
     'posts',
-    () => postService.getPosts(user?.token),
+    () => postService.getPosts(token),
     {
-      enabled: !!user?.token,
+      enabled: !!token,
       refetchOnWindowFocus: false,
     }
   );
@@ -44,7 +44,7 @@ const Feed = () => {
 
   const handleDelete = async (postId) => {
     try {
-      await postService.deletePost(postId, user.token);
+      await postService.deletePost(postId, token);
       // Remove the post from the cache
       queryClient.setQueryData('posts', (oldData) => 
         oldData.filter(post => post._id !== postId)
