@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -17,6 +18,10 @@ const challengeRoutes = require('./routes/challenges');
 const workoutRoutes = require('./routes/workouts');
 const workoutSessionRoutes = require('./routes/workoutSessions');
 const progressRoutes = require('./routes/progress');
+const postRoutes = require('./routes/posts');
+
+// Import upload error handler
+const { handleUploadError } = require('./middleware/upload');
 
 // Middleware
 app.use(helmet());
@@ -36,6 +41,9 @@ app.use('/api/', limiter);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Serve static files from the public directory
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {
@@ -58,6 +66,10 @@ app.use('/api/challenges', challengeRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/workout-sessions', workoutSessionRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/posts', postRoutes);
+
+// Handle file upload errors
+app.use(handleUploadError);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
