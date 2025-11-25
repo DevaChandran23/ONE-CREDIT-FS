@@ -9,7 +9,7 @@ const CreatePost = ({ onPostCreated }) => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -44,7 +44,7 @@ const CreatePost = ({ onPostCreated }) => {
         formData.append('image', image);
       }
 
-      await postService.createPost(formData, user.token);
+      await postService.createPost(formData, token);
       
       setContent('');
       setImage(null);
